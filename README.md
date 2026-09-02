@@ -6,6 +6,14 @@ Scissortail is the source language for plain-text software systems: programs wri
 
 The goal is simple: make AI systems more **inspectable, portable, and controllable** by keeping source and interface in the same legible text.
 
+## Install
+
+Tell your coding agent (Claude Code, Codex, or similar):
+
+> **read this: https://github.com/prairielabs/scissortail/blob/main/HARNESSED_AGENT_READ_THIS.md**
+
+A language installs by teaching its runtime. The installer is written in Scissortail itself, and it is addressed to the model.
+
 ## The specification
 
 The full language specification lives in [`scissortail45h.txt`](scissortail45h.txt) — itself written in the style it defines. Read it top to bottom; it is meant to be consumed by people and models alike.
