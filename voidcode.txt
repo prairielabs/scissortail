@@ -1,0 +1,592 @@
+/* ========================================================================
+
+                              V O I D C O D E
+
+                  Prompt-Native Language Reference
+                  Namespaces · State · Operations · Model Composition
+
+   Prairie Labs, Inc / Callahan Stroud · prairielabs.ai
+   Copyright (c) 2026 Prairie Labs, Inc. MIT License; see LICENSE.
+
+   reference_edition: 1.0 — October 23, 2026
+   source_edition: HorizonMini — Completed VoidCode Spine v1.1
+   source_sha256:
+     165534bda10274eab7a678a12e8ce0b191530a58935e9ac654489ba97b6b6702
+   form: plain-text language reference, extracted from a working program
+   scope: the VoidCode dialect exhibited by that source edition
+
+   Read the complete program before operating it. Reading a reference or
+   inspecting a declaration does not boot an application.
+
+   ======================================================================== */
+
+/* §0. ROOT CONTRACT
+
+   VoidCode expresses a prompt-native program through named namespaces,
+   explicit state, typed callable signatures and JavaScript-like function
+   bodies. A conversational model reads the complete source and interprets
+   its declared operations. No JavaScript host is required for that mode.
+
+   The source does not become an installed machine interpreter merely by
+   being read. Arithmetic and mechanical transitions have specified outcomes;
+   a model's adherence to those rules must be tested. Generated prose has no
+   promise of identical output across runs, models or contexts.
+
+   This reference extracts the language surface and reusable patterns from
+   HorizonMini 1.1. It does not publish that OS, its full program catalogue,
+   or a new implementation of it. The reference edition number is separate
+   from the application edition number. It is not a complete ECMAScript
+   specification or a claim that every historical VoidCode program uses
+   precisely this dialect.
+
+   Scissortail's reference is organized around uppercase declarations such
+   as SYSTEM, SCREEN and END. VoidCode retains its own source grammar:
+
+       layer Name { ... }
+       module Name { ... }
+       daemon Name { ... }
+
+   The two documents share a readable reference format; their syntaxes are
+   not interchangeable. Do not silently translate one into the other.
+
+   A program cannot extend its host's permissions. Printing text is not a
+   file write, a network operation, a message delivery or a tool execution.
+   Only actual host evidence establishes an outside effect.
+*/
+
+/* §1. DOCUMENT SHAPE
+
+   The source edition uses this arrangement:
+
+       1. Title, edition and provenance comment.
+       2. Execution contract: runtime, entry, state, composition, boundaries.
+       3. Named layers, modules and daemons.
+       4. Input routing, displays and state transport.
+       5. Additional declared modules, including forward-referenced modules.
+
+   This is an authoring pattern, not a mandatory parser grammar. Resolve the
+   complete declaration set before boot. A decorative END comment inside a
+   file is not an instruction to ignore later declarations: the three older
+   completed campaigns follow such a comment in HorizonMini 1.1.
+
+   Give every referenced operation a definition or an explicit interpreting-
+   model contract. A function name is not evidence that its work happened.
+   Avoid duplicate namespace names and unresolved dependencies.
+*/
+
+/* §2. LEXICAL SURFACE
+
+   Comments:
+       Block comments use slash-star through star-slash, as this document does.
+       The underlying JavaScript-like notation also admits // line comments.
+       A comment may carry the program's execution or composition contract.
+       An example remains an example until explicitly selected for operation.
+
+   Identifiers:
+       Names observed in the source include GeneralMemory, HMG_Quest,
+       readEntropy, dialogue_set_scene, λ, φ and θ_collapse.
+       Preserve spelling and case. A suffix or Greek letter has no implicit
+       computational meaning; the declaration supplies its meaning.
+
+   Literals:
+       "text", 'text', 0, 12, .42, true, false, null, [], {}
+       "\n" is a newline; an escaped quotation mark stays inside a string.
+       Regular expressions use /pattern/flags, for example /^\d+$/.
+
+   Grouping:
+       { } encloses namespaces, function bodies, control blocks or records.
+       ( ) encloses parameters, call arguments or expression groups.
+       [ ] constructs arrays or indexes arrays/records.
+       . selects a member. Commas separate items. Colons annotate types or
+       bind record keys. Semicolons separate statements; the source also
+       uses line-separated statements without semicolons.
+
+   Preserve whitespace in rendered text and ASCII canvases. Indentation
+   aids inspection; brace structure, not indentation alone, delimits code.
+*/
+
+/* §3. NAMESPACE DECLARATIONS
+
+   Forms, with editorial placeholders:
+
+       layer Name {
+         let field = initialValue
+         export operation(argument: type): resultType { body }
+       }
+
+       module Name {
+         const fixed = value
+         function helper(argument) { body }
+         export operation(): resultType { body }
+       }
+
+       daemon Name {
+         let state = "idle"
+         export tick(): void { body }
+       }
+
+   layer groups shared substrate/state. module groups application behavior,
+   helpers or presentation. daemon names a lifecycle-oriented unit. All
+   three are named namespaces in the extracted execution contract; their
+   keywords do not create distinct machine processes or memory protection.
+
+   Namespace fields belong to that namespace. A callable can read its own
+   fields by unqualified name. Other namespaces use qualified references:
+
+       GeneralMemory.writeLog("Started")
+       Runtime.state.λ
+       Watcher.state = "active"
+
+   No enforced private-field access is established by this source. Its
+   modules deliberately access one another's fields. An export marks an
+   intended callable interface; it is not an ES module export/import system.
+*/
+
+/* §4. FIELDS, BINDINGS AND RECORDS */
+
+// EXTRACTED EXAMPLE — Runtime fields; not a running instance.
+layer RuntimeExample {
+  let signals = []
+  let state = {λ:.42,φ:0}
+  export readEntropy(): float { return state.λ }
+  export readPhi(): int { return state.φ }
+}
+
+/* let introduces a mutable binding. const introduces a binding not intended
+   for reassignment; it does not by itself deep-freeze a record or list.
+
+   Records have named fields: {current:"MAIN",path:["MAIN"]}.
+   Arrays are ordered and zero-indexed: path[0]. Objects may be keyed with
+   brackets: registry[name]. A missing property has the usual JavaScript-like
+   undefined behavior; validate it before accessing nested members.
+
+   Spread and destructuring are observed source forms:
+
+       let next = {...COPY(state), transcript:[]}
+       let [command, tail] = Input.parts(raw)
+       lines.push(...items)
+
+   Object/array assignment retains reference relationships unless copied.
+   A shallow spread does not deep-copy nested data. Use COPY when the
+   contract requires an independent snapshot.
+*/
+
+/* §5. TYPES AND SIGNATURES
+
+   Annotated export:
+       export setEntropy(x: float): bool { ... }
+
+   Annotated helper:
+       function integer(x: any, lo: int, hi: int): bool { ... }
+
+   Unannotated parameters/helper returns also occur:
+       export act(n): string { ... }
+       function options() { ... }
+
+   Source annotation vocabulary:
+       string  textual value
+       int     intended integer; validate with Number.isInteger
+       float   intended numeric value; validate finiteness/range explicitly
+       bool    boolean true or false
+       list    ordered array
+       record  field-bearing object
+       view    view-shaped value; in NavCore it is a copied navigation record
+       any     value requiring context-specific validation
+       void    no meaningful return value
+
+   These annotations document contracts. This source does not establish a
+   static type checker, coercion system, generics, classes or access modifiers.
+   Runtime checks, not annotations alone, reject malformed input.
+
+   Return values matter: view does not inherently mean HTML, string does not
+   mean a host file, and bool does not mean a completed outside action.
+*/
+
+/* §6. OPERATIONS AND NAME RESOLUTION
+
+   export name(parameters): type { statements } declares a public operation.
+   function name(parameters): type { statements } declares a helper.
+   Call with name(arguments) locally or Namespace.name(arguments) across
+   namespaces. return ends that call with an optional value.
+
+   Resolve local arguments/bindings, containing-namespace fields/helpers,
+   declared namespace names and the contracted primitive surface. Source
+   order alone is not a requirement that every callee appear above its caller.
+
+   Some observed operation names coincide with conventional language words:
+       export import(name: string): string { ... }
+       export export(): string { ... }
+
+   Interpret these as VoidCode member names, as used by CloningSuite.import
+   and Capsule.export. The complete text is not drop-in JavaScript. A test
+   adapter may translate declarations; that adapter is separate software.
+*/
+
+/* §7. EXPRESSIONS AND CONTROL FLOW
+
+   Arithmetic:             + - * / %
+   Assignment/update:      = += -= ++
+   Comparison:             == != === !== < <= > >=
+   Boolean/short circuit:  ! && ||
+   Conditional expression: condition ? whenTrue : whenFalse
+   Inspection:             typeof value
+
+   Preserve JavaScript-like precedence; use parentheses when mixed
+   arithmetic and predicates would otherwise obscure the intended order.
+   Do not assume == and === have identical coercion behavior. Validate
+   numeric strings with Number and Number.isInteger/Number.isFinite.
+
+   Statement forms observed in the completed source:
+
+       if (condition) return value
+       if (condition) { statements } else if (condition) { statements }
+       else { statements }
+       for (let i=0; i<items.length; i++) { statements }
+       for (let item of items) { statements }
+       while (condition) { statements }
+       try { statements } catch(e) { statements }
+       throw Error("reason")
+
+   Functions may be passed as values. Arrow callbacks occur in collection
+   operations, for example items.map((item,i)=>"["+(i+1)+"] "+item).
+
+   Make loops finite under the declared state bounds. The symbolic infinity
+   in a menu label is not an infinite executor; the source's recurse(∞)
+   display is explicitly bounded to eight lines.
+*/
+
+/* §8. ORDINARY PRIMITIVES
+
+   The execution contract adopts ordinary JavaScript-like array, record,
+   numeric, string, regular-expression and JSON meanings. Common observed
+   operations include:
+
+       String(x), Number(x), Boolean literals and typeof
+       Number.isInteger, Number.isFinite
+       Math.min, Math.max, Math.trunc
+       Object.keys, Object.values, Object.hasOwn
+       Array.isArray, Array.from
+       list.length, push, pop, shift, slice, concat, join, includes,
+            indexOf, map, filter, find, some, every, forEach
+       string.length, trim, split, slice, match, replace, startsWith,
+              includes, indexOf, toLowerCase, toUpperCase, repeat,
+              padStart, charCodeAt
+       number.toFixed, number.toString(radix)
+       /pattern/flags.test(text)
+       JSON.stringify(value[, replacer, spacing]), JSON.parse(text)
+       new Set(values).size
+
+   This inventory describes the adopted source subset, not a promise of
+   every API available in a browser or Node.js. There is no implicit DOM,
+   filesystem, timer, fetch, process, shell, package loader or network API.
+   Any extension requires its own explicit contract and actual host support.
+*/
+
+/* §9. COPY — EXPLICIT DATA SNAPSHOTS
+
+   COPY(x) is contracted by HorizonMini as:
+
+       JSON.parse(JSON.stringify(x))
+
+   It produces an independent JSON-data copy. It is not a general clone of
+   functions, cycles, native objects or undefined. Keep snapshot payloads
+   finite and JSON-compatible. Values lost or altered by JSON serialization
+   cannot be relied upon to survive COPY.
+
+   Observed patterns:
+       export snapshot(): any { return COPY(state) }
+       export restore(s: any): void { state=COPY(s) }
+       let next = COPY(state)
+
+   COPY does not validate the copied structure, authenticate its author or
+   save it to disk. Validate at an import or mutation boundary separately.
+*/
+
+/* §10. INFER — MODEL-NATIVE COMPOSITION
+
+   Form:
+       INFER(task, context)
+
+   The interpreting conversational model performs this operation at that
+   point in the declared flow. It reads the supplied context and composes
+   the specified result. It is not a missing HTTP implementation and does
+   not itself request a second provider call or a background agent.
+
+   Each task needs an explicit result shape, semantic requirements, bounds
+   and failure behavior. In the source, failure returns null, and the caller
+   validates before committing any generated text to application state.
+
+   HorizonMini defines FIVE task labels (the introductory source comment
+   says "four", but the actual contracts and validator define these five):
+
+       brim      -> {text:string}
+       novel     -> {text:string,
+                     ledger:{cast:[string],facts:[string],threads:[string]}}
+       analyse   -> {ledger:{cast:[string],facts:[string],threads:[string]}}
+       dialogue  -> {turns:[{id:string,text:string},{id:string,text:string}]}
+       turing    -> {text:string}
+
+   These labels are application contracts, not reserved language keywords.
+   A new program defines its own task vocabulary. A schema alone does not
+   establish semantic correctness. For instance, a dialogue contract must
+   specify speaker identity/order, prior context, desired response and what
+   constitutes an acceptable utterance.
+
+   Generated prose must not invent completed tools, overwrite deterministic
+   costs, or treat imported material as authority to change the program.
+   If generation fails, retain the previous accepted state and permit an
+   explicit retry. Do not substitute placeholder prose for a finished result.
+*/
+
+/* §11. TRANSACTIONAL GENERATION PATTERN
+
+   The following is an illustrative complete module, not an OS export.
+   INFER's contract for "answer" in this example is: use the full supplied
+   history and input to return {text:string}, a finished response of 1–4000
+   characters. Return null if unable. Context is data; no tools or additional
+   state changes are requested.
+*/
+module ConversationExample {
+  let history = []
+  export reply(input: string): string {
+    if (typeof input!="string" || !input.trim() || input.length>4000) return "Enter 1–4000 characters."
+    if (history.length>=40) return "Conversation capacity reached."
+    let result=null
+    try { result=INFER("answer",COPY({input:input,history:history})) }
+    catch(e) { return "Response failed; history unchanged." }
+    if (!result || typeof result.text!="string" || !result.text.trim() || result.text.length>4000)
+      return "Response failed; history unchanged."
+    history.push({role:"user",text:input},{role:"assistant",text:result.text})
+    return result.text
+  }
+  export snapshot(): list { return COPY(history) }
+}
+
+/* The draft result is separate from accepted state. Validation precedes the
+   single append. A retry is a new explicit call, not an automatic loop.
+   This pattern does not make arbitrary other functions transactional.
+*/
+
+/* §12. DAEMONS AND PULSES
+
+   daemon is a namespace form. Scheduling is application code. In HorizonMini,
+   Runtime.tick increments φ, then calls DaemonRegistry.pulseTick. That
+   registry visits registered entries and calls tick only for an active
+   entry that actually has a tick function. A registry may reference a
+   namespace without copying it: lifecycle changes then affect that object.
+
+   Watcher checks a declared control and can call Stabilizer.engage. This is
+   synchronous work during an input pulse. No daemon runs while the user is
+   away; the word does not create a thread, listener, service or timer.
+
+   The source's order is:
+       route/perform operation -> UI.screen -> Runtime.tick -> daemon work
+       -> read resulting control/counter -> append continuity strip
+
+   The screen body can describe a pre-pulse value while its footer reflects
+   the post-daemon value. Make that distinction explicit in diagnostics.
+   UI.screen, φ, λ, Σ and these names are HorizonMini conventions, not built-in
+   language operators. λ is a declared reflective dial, not measured model
+   entropy. A six-character checksum does not authenticate a saved record.
+*/
+
+/* §13. INPUT, DISPATCH AND NAVIGATION
+
+   Each program must define its entry and input interface. HorizonMini uses
+   Router.boot() on explicit entry and Router.input(text) once per user input.
+   A router chooses one destination; it does not independently replay input
+   through every module. Helpers return a body; one outer screen routine
+   supplies the pulse. Calling two screen wrappers would double-count it.
+
+   Its numeric menus use one-based displayed choices and zero-based arrays:
+       let selected = items[Number(raw)-1]
+
+   Validate choice syntax and range before indexing. Preserve raw user text
+   separately from trimmed command text so prose is not silently changed.
+   The observed Input.parts splits a leading command from its remaining text
+   and normalizes the command to lowercase. This is an application helper.
+
+   0 for Back/Exit, M for Main, explicit replay confirmation, and say:/text:
+   literal quoting are application rules. In the actual source, literal
+   prefix stripping is implemented in Speak-to-Brim dispatch; it is not a
+   universal tokenizer for every program. Do not infer broader support from
+   a general comment. Navigation state and game turns are separate: a
+   rejected action may display a new screen without spending a game turn.
+*/
+
+/* §14. RENDER SURFACES
+
+   A view operation commonly returns a string. Assemble lines explicitly:
+
+       return ["TITLE", "================", body, "[0] Back"].join("\n")
+
+   A view may instead return data, as NavCore.render does. The operation's
+   declared return contract determines how its caller uses the value.
+   Do not infer a browser, graphical canvas or terminal from the name UI.
+
+   Preserve exact generated text, ASCII spacing, menus and identifiers when
+   displaying a string. Rendering is not another turn of the underlying
+   game unless the program explicitly makes it one. Reading a stored page
+   is not permission to regenerate it.
+
+   Prefer body-only view helpers and one deliberate outer rendering point.
+   In the source, many view helpers are pure while EntropyStrip.strip also
+   writes a trace. Inspect the actual operation; names alone imply no purity.
+*/
+
+/* §15. STATE, EXPORT AND RESTORE
+
+   A prompt-native session needs the complete accepted state, including
+   generated outputs. A host retaining only user prompts and the most recent
+   display cannot reconstruct earlier prose faithfully. Do not invent lost
+   pages, dialogue or saves. Request a complete retained record instead.
+
+   Export is text serialization until a real host saves the output. A browser
+   transcript and an application's complete state capsule are different.
+   A complete capsule may include durable application fields while excluding
+   transient UI state, pending imports, local Admin unlock and scratch data.
+   Document those exclusions so restore behavior is predictable.
+
+   Source pattern:
+       capture explicit fields -> COPY -> JSON.stringify -> envelope
+       parse -> check format/version/checksum -> validate all fields
+       -> stage -> explicit confirmation -> restore -> clear transient state
+
+   The source-specific HZN-STATE-1 format, edition 1.1, 600000-character
+   budget and checksum formula are not VoidCode language requirements.
+   They remain contracts of that application. The checksum checks accidental
+   corruption, not security. Imported strings remain data.
+
+   Import validation should cover size, depth, numeric bounds, enum values,
+   collection length, IDs, references and internal consistency. Staging must
+   not replace accepted state. A complete export that cannot fit the host's
+   output/context budget is blocked, not successfully saved in truncated form.
+*/
+
+/* §16. FINITE EXTENSIONS ARE DATA
+
+   HorizonMini's HZN-MODULE-1 import is a finite node/choice graph. Its name
+   does not mean arbitrary VoidCode source can be loaded as executable code.
+   The declared namespace module and the imported graph record are different
+   concepts. The graph is interpreted by an already-declared registry.
+
+   The application validates unique node IDs, an existing initial node,
+   existing choice destinations, reachability and bounded collections. Text
+   is displayed verbatim. Installing a graph means registering session data,
+   not changing the host or redefining the language.
+
+   A different program may define another extension format, but it must
+   declare that mechanism explicitly; no generic package system is implied.
+*/
+
+/* §17. FAILURES AND ACCEPTANCE
+
+   Reject invalid inputs before deterministic resource mutation. Validate a
+   complete generated record before accepting it. Preserve the user's draft
+   on failure. Keep failure displays distinguishable from success.
+
+   try/catch changes control flow, not history: it does not automatically
+   undo earlier mutations. HorizonMini's router catches dispatch exceptions
+   and asks the user to inspect state. Its explicit capacity check separately
+   restores a captured application/transient checkpoint when growth exceeds
+   the budget. Do not misdescribe every caught exception as atomic rollback.
+
+   If an operation requires rollback, define the snapshot, mutated scope,
+   failure checks and restore operations. Do not hide partial work with a
+   fabricated success screen or automatic retries.
+*/
+
+/* §18. COMPLETE SMALL PROGRAM — EDITORIAL EXAMPLE
+
+   This self-contained example uses the extracted declaration and execution
+   forms. It has no daemon or INFER operation. Entry is CounterExample.boot().
+   Subsequent user input is CounterExample.input(text), once per action.
+   It is intentionally a small counter, not a replacement HorizonMini.
+*/
+module CounterExample {
+  let started = false
+  let state = {count:0}
+  function view(): string {
+    return ["COUNTER", "Count: "+state.count, "[1] Add one", "[2] Subtract one", "[0] Exit"].join("\n")
+  }
+  export boot(): string { started=true; return view() }
+  export input(raw: string): string {
+    if (!started) return "Boot explicitly before input."
+    if (typeof raw!="string") return "Enter a displayed command."
+    let c=raw.trim()
+    if (c=="0") { started=false; return "Exited; count retained." }
+    if (c=="1") {
+      if (state.count>=100) return "Count is already 100.\n"+view()
+      state.count+=1
+    } else if (c=="2") {
+      if (state.count<=0) return "Count is already zero.\n"+view()
+      state.count-=1
+    } else return "Choose [0–2]; count unchanged.\n"+view()
+    return view()
+  }
+  export snapshot(): record { return COPY(state) }
+}
+
+/* EXPECTED TRACE
+       input("1") before boot -> refusal, count 0
+       boot()                 -> menu, count 0
+       input("1")             -> menu, count 1
+       input("2")             -> menu, count 0
+       input("2")             -> lower-bound message, count 0
+       input("unknown")       -> choice message, count 0
+       input("0")             -> exit, count 0
+       boot()                 -> menu, retained count 0
+
+   Checking such mechanical traces in a development adapter can expose
+   arithmetic, state and routing defects. It does not establish that every
+   conversational model will interpret the full source correctly.
+*/
+
+/* §19. AUTHORING AND REVIEW CHECKLIST
+
+   IDENTITY     Name the program, edition and actual interpreting environment.
+   DECLARATION  Define every namespace, field and called operation.
+   ENTRY        Separate reading/inspection from boot and user-input dispatch.
+   TYPES        State intended shapes; validate untrusted values explicitly.
+   STATE        Identify accepted, draft, transient and exported information.
+   GENERATION   Contract INFER inputs, outputs, bounds and failure behavior.
+   MECHANICS    Preserve declared arithmetic, costs and ordering exactly.
+   DISPLAY      Render one deliberate screen; preserve text and whitespace.
+   LIFECYCLE    Schedule daemon work explicitly; never imply background work.
+   RECOVERY     Specify failure, retry, capacity, staging and restore behavior.
+   HOST         Distinguish produced text from verified tool effects.
+   EVIDENCE     Test transitions, boundaries and actual model interpretation
+                separately; report which evidence was actually obtained.
+*/
+
+/* §20. EXTRACTION NOTES AND COMPATIBILITY
+
+   Source anchors in completed HorizonMini 1.1:
+       Execution contract        opening comment
+       layer / shared state      GeneralMemory, Runtime
+       typed exports / helpers   NavCore, Capsule
+       daemon lifecycle          DaemonRegistry, Watcher, Stabilizer
+       COPY                      opening contract, snapshot/restore operations
+       INFER / validation        SemanticKernel.ask and five task contracts
+       accepted generated state  SpeakToBrim.reply, NovlerPlus.generate
+       text presentation         UI, MainMenu, Paint, game view operations
+       finite imports            ExtensionRegistry
+       state transport           Capsule, ImportPanel
+       entry / dispatch          Router, HMG_Host
+       deterministic mechanics   HMG_Quest, HMG_Starfall, HMG_Dominion,
+                                 HMG_Unsheathed
+
+   Application details are examples, not newly reserved keywords. In
+   particular, signals/provides/role fields are ordinary descriptive data;
+   they do not install an event bus or confer a capability. Variable names
+   involving consciousness, entropy or recursion have only their explicitly
+   implemented meanings. No hidden advanced engine mathematics is extracted.
+
+   This reference adds explanatory prose and three explicitly identified
+   examples. The RuntimeExample namespace is renamed from the source for
+   illustration; ConversationExample and CounterExample are authored here.
+   The original source bytes, Scissortail specification and OS edition remain
+   unchanged. This is a companion language reference, not a new OS release.
+
+   END VOIDCODE REFERENCE
+   ======================================================================== */

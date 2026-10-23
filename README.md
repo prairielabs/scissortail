@@ -18,7 +18,17 @@ A language installs by teaching its runtime. The installer is written in Scissor
 
 The full language specification lives in [`scissortail45h.txt`](scissortail45h.txt) — itself written in the style it defines. Read it top to bottom; it is meant to be consumed by people and models alike.
 
-## What's in the language
+## VoidCode companion reference
+
+[`voidcode.txt`](voidcode.txt) documents the VoidCode dialect extracted from
+the completed HorizonMini 1.1 OS: `layer`, `module`, `daemon`, typed operations,
+explicit state, JavaScript-like bodies, and model-native `INFER` contracts.
+It includes source provenance, reusable patterns and complete small examples.
+VoidCode retains its own syntax; this companion does not replace Scissortail
+or distribute the full HorizonMini OS. The conversational model interprets
+the source; model adherence is separate from mechanical test results.
+
+## What's in Scissortail
 
 Title cards, sections, constants, systems, principles, axioms, invariants, structures, types, screens, menus, programs, games, policies, boundaries, constraints, kernels, process steps, context records, render surfaces, and exports — a complete surface for building long-form `.txt` systems that run wherever a capable model can read them.
 
