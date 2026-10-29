@@ -44,4 +44,4 @@ Scissortail — Created by Prairie Labs, Inc / Callahan Stroud — prairielabs.a
 
 ## Prompt-native build examples
 
-See [`examples/prompt-native-builds`](examples/prompt-native-builds/README.md) for a Scissortail request-shaping demonstration and two selected VoidCode source builds with provenance, attribution, runtime limits, and per-file rights notes.
+See [`examples/prompt-native-builds`](examples/prompt-native-builds/README.md) for the working Scissortail request-shaping system, a 14-construct source gallery, and two selected VoidCode source builds with provenance, attribution, runtime limits, and per-file rights notes.
