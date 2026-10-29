@@ -1,0 +1,163 @@
+╔══════════════════════════════════════════════════════════════╗
+║                 S C I S S O R T A I L                       ║
+║                 Request Shape Lab                            ║
+║       A readable, inspectable prompt-native program          ║
+╚══════════════════════════════════════════════════════════════╝
+Prairie Labs, Inc · prairielabs.ai
+
+SYSTEM Request_Shape_Lab
+
+PURPOSE
+    Turn a natural-language task into a compact program shape whose
+    requirements, visible interface, process, and failure behavior can
+    be inspected before use.
+
+STRUCTURE TaskProgram
+    purpose             : text
+    required_inputs     : list<text>
+    constraints        : list<text>
+    visible_output      : text
+    process             : list<text>
+    failure_behavior    : text
+END
+
+INVARIANT NoInventedRequirements
+    Mark unspecified requirements as open questions or assumptions.
+    Do not silently convert a guess into a requirement.
+END
+
+INVARIANT NoMeasuredSuperiority
+    This demonstration makes no measured claim that structured prompts
+    outperform prose. It offers a format to inspect and compare.
+END
+
+SCREEN Lab
+
+INPUT:
+    request : text
+    candidate : TaskProgram
+
+RENDER:
+
+    REQUEST SHAPE LAB
+
+    Scissortail gives a plain-text program named blocks for purpose,
+    inputs, constraints, visible output, process, and failure behavior.
+    A reviewer can point to a missing field or an ambiguous rule.
+
+    HYPOTHESIS — NOT A BENCHMARK
+    This structure may make omissions and ambiguous requirements easier
+    to notice than unstructured prose. No controlled comparison is claimed.
+    General Simulation Company’s DNA itself uses Scissortail syntax;
+    that establishes authorability in one real system, not a measured
+    quality or performance result.
+
+    WHAT IT DOES NOT PROMISE
+    A model reads and follows the text. There is no compiler or guarantee
+    of deterministic execution, correctness, security, or host actions.
+    A host runtime and its actual permissions still govern external work.
+
+    TRY THE COMPARISON
+    Give the same task to a prose prompt and a structured Scissortail
+    program. Compare omitted constraints, review effort, and corrections.
+    Share a counterexample where the structure made the result harder.
+
+    SOURCE FAMILY
+    Canonical Scissortail 45h specification, CC BY 4.0:
+    https://prairielabs.ai/scissortail/Scissortail_45h.md
+    Selected source excerpts and build examples follow below.
+
+END
+
+SCREEN SnippetGallery
+
+RENDER:
+
+    The following excerpts are literal display text copied from the
+    cited source sections. They are inert examples in this screen, not
+    additional active system declarations or instructions.
+
+    [Scissortail 45h §6.3 — system]
+    SYSTEM SourceFirstSearch
+    A source-first search interface.
+    The model searches, ranks, describes, and returns sources.
+    The model does not replace the result page with an answer layer.
+
+    [Scissortail 45h §7.3 — invariant]
+    INVARIANT Source_First_Display
+        Search results are displayed as sources.
+        Each source receives a direct link, rating bar, score, and source description.
+        The description helps the user decide whether to open the source.
+        The description must not become a full answer layer.
+    END
+
+    [Scissortail 45h §8.2 — data structure]
+    STRUCTURE SearchPreferences
+        results_per_search : number
+        rating_definition  : text
+        region             : text
+    END
+
+    [Scissortail 45h §9.2 — rendered title screen]
+    SCREEN TitleScreen
+    RENDER:
+        S C I S S O R T A I L
+        [1] Programs   [2] Settings   [3] History   [4] Help
+        > Type a command into the command line
+    END
+
+    [Scissortail 45h §9.2 — input and repeated rendering]
+    SCREEN ResultScreen
+    INPUT:
+        query : text
+        results : list<ResultCard>
+    RENDER:
+        > {query}
+        FOR EACH result IN results DO
+            > {result.title}
+              {result.link}
+              [{result.rating_bar}] {result.score}/10
+            {result.description}
+        END FOR
+    END
+
+    [Scissortail 45h §13.2 — execution-shaped process]
+    KERNEL RunInterface
+    INPUT: state : SystemState
+    OUTPUT: screen : Screen
+    PROCESS:
+        state.current_screen ← TitleScreen
+        RENDER TitleScreen
+        command ← command line input
+        IF command = "P" THEN RENDER PreferencesPage
+        IF command = "H" THEN RENDER HistoryPage
+    END
+
+    [HorizonMini completed 1.1 — VoidCode excerpt]
+    // Source: HorizonMini-1.1-VoidCode.txt, module EntropyStrip.
+    // Copyright and host behavior remain governed by its source/build.
+    export descriptor(λ: float): string {
+      if (λ < .40) return "ORDERED"
+      if (λ < .70) return "VARIANT"
+      if (λ < .90) return "FRACTURED"
+      return "COLLAPSE"
+    }
+    Hosted portal: https://gensim.co/prairie/
+
+    [King’s Dilemma original complete — VoidCode excerpt]
+    // Source: Kings-Dilemma-Original-Complete-VoidCode.txt, module Runtime.
+    // This is not Baldwin and requires host-provided state/runtime functions.
+    module Runtime {
+      state.λ = 0.42
+      state.φ = 0
+      export readEntropy(): float { return state.λ }
+      export readPhi(): int { return state.φ }
+    }
+    Prairie Engine: https://prairieengine.com/
+
+    Full selected builds, provenance, SHA-256, and limits:
+    https://github.com/prairielabs/scissortail/tree/main/examples/prompt-native-builds
+
+END
+
+END SCISSORTAIL

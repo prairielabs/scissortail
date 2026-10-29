@@ -41,3 +41,7 @@ MIT licensed. Attribution appreciated:
 ```
 Scissortail — Created by Prairie Labs, Inc / Callahan Stroud — prairielabs.ai
 ```
+
+## Prompt-native build examples
+
+See [`examples/prompt-native-builds`](examples/prompt-native-builds/README.md) for a Scissortail request-shaping demonstration and two selected VoidCode source builds with provenance, attribution, runtime limits, and per-file rights notes.
