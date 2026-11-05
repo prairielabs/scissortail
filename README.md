@@ -6,6 +6,10 @@ Scissortail is the source language for plain-text software systems: programs wri
 
 The goal is simple: make AI systems more **inspectable, portable, and controllable** by keeping source and interface in the same legible text.
 
+## Stability
+
+Scissortail is a foundational prompt-based programming language. Its specification is fixed and will not be updated or changed.
+
 ## Install
 
 Tell your coding agent (Claude Code, Codex, or similar):
