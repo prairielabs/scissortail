@@ -31,12 +31,20 @@ INVARIANT Reading_Is_Separate_From_Running
 
 END
 
+INVARIANT Review_Own_Simulation_Before_Run
+
+    Before starting a simulation you authored, review its current source.
+    Fix the defects you find and recheck the corrected source before starting.
+    A request to write and run is sufficient to perform this entire sequence.
+
+END
+
 SCREEN ManualCommands
 
     RENDER:
-        AUTHOR       Write a Scissortail program from the requested behavior.
+        AUTHOR       Draft, review, and repair a Scissortail program.
         REVIEW       Check a program against the specification.
-        RUN          Interpret the supplied program in this conversation.
+        RUN          Interpret the requested program in this conversation.
         RUN EXAMPLE  Start the reservoir simulation in §1.
 
 END
@@ -52,22 +60,53 @@ KERNEL UseScissortail
            Use the specification for syntax and the user request for scope.
            IF the user asks for operations THEN RENDER ManualCommands and RETURN.
 
-        2. IF the user requests authoring THEN define the world and participant
-           actions in SYSTEM. Declare fields with STRUCTURE, rules with INVARIANT,
-           and visible output with SCREEN. In KERNEL, initialize state, route
-           commands, and handle invalid actions. Check §25 of the specification
-           and RETURN the program as plain Scissortail source.
+        2. IF the user requests RUN EXAMPLE THEN start StartReservoir and RETURN.
 
-        3. IF the user requests review THEN check §25. For a program with
-           commands, trace one valid and one invalid command from initial state.
-           Report each violation with its source location and rule. RETURN.
+        3. IF the user requests authoring THEN draft the source. Define the
+           world and participant actions in SYSTEM. Declare fields with
+           STRUCTURE, rules with INVARIANT, and visible output with SCREEN.
+           In KERNEL, initialize state, route commands, and handle invalid actions.
+           Otherwise READ the requested program in full. IF it is missing THEN
+           request it and RETURN.
 
-        4. IF the user requests RUN EXAMPLE THEN start StartReservoir and RETURN.
-           IF the user requests RUN and the program is missing THEN request
-           the program and RETURN. Otherwise, when asked to run a supplied
-           program, READ it in full and start its declared entry point.
-           Follow its command routing, update declared state, and render its
-           outputs. Report external effects only when a host tool confirms them.
+        4. IF the user requests only review THEN apply ReviewScissortail to
+           the source. Report its findings with source locations and RETURN.
+
+        5. IF you drafted the source in step 3 or are about to run a simulation
+           you authored earlier THEN apply ReviewScissortail to the source.
+           WHILE findings remain DO
+               Repair the source and apply ReviewScissortail again.
+               IF a finding cannot be resolved THEN report it and RETURN.
+           END WHILE
+           Report the checks and any repairs briefly. For authoring, return
+           the reviewed source as plain Scissortail. Continue to step 6 if
+           the same request also asks you to run it.
+
+        6. IF the user requests execution THEN start the declared entry point
+           of the final source with its declared initial state. Follow its
+           command routing and render its outputs. Report external effects
+           only when a host tool confirms them.
+
+END
+
+KERNEL ReviewScissortail
+
+    INPUT:
+        source : text — the exact program under review
+
+    OUTPUT:
+        findings : list<text> — source locations and rules requiring repair
+
+    PROCESS:
+        1. Check the source against §25 of the specification. Verify that
+           declared state, commands, and render inputs agree with the kernel.
+        2. For a program with commands, trace initialization and then one valid
+           and one invalid command from separate copies of initial state.
+           Derive the state and screen from source. Report missing or ambiguous
+           transitions, unintended state changes, and inconsistent renders.
+           Check any declared completion condition against the reachable state.
+        3. RETURN the findings. The trace uses scratch state. A later run
+           starts from the declared initial state.
 
 END
 
