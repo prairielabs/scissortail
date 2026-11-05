@@ -1,51 +1,11 @@
 # Scissortail
 
-**A prompt-native programming language.**
+Scissortail 45H is the fixed specification for a prompt-native programming language. Prairie Labs uses it to program simulations in plain text for a language model to interpret.
 
-Scissortail is the source language for plain-text software systems: programs written as ordinary `.txt` files that language models can read, follow, and operate as working interfaces. It gives structure to screens, rules, settings, memory, search, applications, and agent behavior — while keeping the entire program surface readable to a human.
+## Agent entry point
 
-The goal is simple: make AI systems more **inspectable, portable, and controllable** by keeping source and interface in the same legible text.
+1. Read [Scissortail.txt](Scissortail.txt) in full before writing, reviewing, or running a Scissortail program. Use its definitions and syntax as your reference.
+2. When asked to write a simulation, express its context, state, rules, transitions, and outputs using the constructs in the specification. Make it clear how participant choices affect state.
+3. When asked to run a program, read the requested program and follow its declared state and rules within the host's permissions. Treat examples in the specification as reference material. Report external effects only after the host confirms them.
 
-## Stability
-
-Scissortail is a foundational prompt-based programming language. Its specification is fixed and will not be updated or changed.
-
-## Install
-
-Tell your coding agent (Claude Code, Codex, or similar):
-
-> **read this: https://github.com/prairielabs/scissortail/blob/main/HARNESSED_AGENT_READ_THIS.md**
-
-A language installs by teaching its runtime. The installer is written in Scissortail itself, and it is addressed to the model.
-
-## The specification
-
-The full language specification lives in [`scissortail45h.txt`](scissortail45h.txt) — itself written in the style it defines. Read it top to bottom; it is meant to be consumed by people and models alike.
-
-## VoidCode companion reference
-
-[`voidcode.txt`](voidcode.txt) documents the VoidCode dialect extracted from
-the completed HorizonMini 1.1 OS: `layer`, `module`, `daemon`, typed operations,
-explicit state, JavaScript-like bodies, and model-native `INFER` contracts.
-It includes source provenance, reusable patterns and complete small examples.
-VoidCode retains its own syntax; this companion does not replace Scissortail
-or distribute the full HorizonMini OS. The conversational model interprets
-the source; model adherence is separate from mechanical test results.
-
-## What's in Scissortail
-
-Title cards, sections, constants, systems, principles, axioms, invariants, structures, types, screens, menus, programs, games, policies, boundaries, constraints, kernels, process steps, context records, render surfaces, and exports — a complete surface for building long-form `.txt` systems that run wherever a capable model can read them.
-
-## Provenance
-
-Created by [Prairie Labs, Inc](https://prairielabs.ai) — the General Simulation Company. Scissortail is the language family behind Prairie Labs' prompt-native products.
-
-MIT licensed. Attribution appreciated:
-
-```
-Scissortail — Created by Prairie Labs, Inc / Callahan Stroud — prairielabs.ai
-```
-
-## Prompt-native build examples
-
-See [`examples/prompt-native-builds`](examples/prompt-native-builds/README.md) for the working Scissortail request-shaping system, a 14-construct source gallery, and two selected VoidCode source builds with provenance, attribution, runtime limits, and per-file rights notes.
+Scissortail was created by Prairie Labs, Inc / Callahan Stroud. The specification is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).

@@ -18,14 +18,14 @@ prairielabs.ai
 
 Prairie Labs builds prompt-native software systems: plain text programs that language models can read, follow, and operate as working interfaces. Scissortail is the source language for these systems, giving structure to screens, rules, settings, memory, search, applications, and agent behavior inside ordinary .txt files. The goal is simple: make AI systems more inspectable, portable, and controllable by keeping the program surface readable to people while still being usable by models.
 
-license: MIT (see LICENSE)
+license: Creative Commons Attribution 4.0 International (CC BY 4.0)
 attribution: Created by Prairie Labs, Inc / Callahan Stroud
 origin: Prairie Labs, Inc
 copyright: 2026 Prairie Labs, Inc
-release: public open-source specification
+release: public company-site download
 public_role: prompt-native programming language
 deployment: general public
-license_reference: https://opensource.org/license/mit
+license_reference: https://creativecommons.org/licenses/by/4.0/
 
 
 signature: cs
@@ -59,12 +59,14 @@ END
 
 POLICY PublicLicenseAndAttribution
 
-Scissortail is released under the MIT License; see the LICENSE file in this
-repository. You may use, copy, modify, merge, publish, distribute, sublicense,
-and sell copies of this material, including for commercial purposes, provided
-the copyright notice and permission notice are preserved.
+Scissortail is released for public download under Creative Commons Attribution
+4.0 International, commonly written as CC BY 4.0.
 
-Appreciated attribution:
+Users may copy, redistribute, study, quote, adapt, remix, transform, and build
+from this Scissortail source material, including for commercial purposes, so
+long as attribution is preserved.
+
+Required attribution:
 
     Scissortail
     Created by Prairie Labs, Inc / Callahan Stroud
@@ -74,6 +76,7 @@ Attribution must not imply that Prairie Labs, Inc endorses a derivative work,
 product, company, model, platform, or deployment unless Prairie Labs, Inc has
 separately given that endorsement.
 
+Derivative works should mark meaningful changes when they are redistributed.
 Scissortail, Prairie Labs, Elwood, and related project names identify their
 origin and should not be used to confuse provenance.
 
